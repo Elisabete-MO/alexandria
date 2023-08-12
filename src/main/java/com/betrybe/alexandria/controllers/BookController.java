@@ -1,8 +1,10 @@
 package com.betrybe.alexandria.controllers;
 
 import com.betrybe.alexandria.controllers.dto.BookDTO;
+import com.betrybe.alexandria.controllers.dto.BookDetailDTO;
 import com.betrybe.alexandria.controllers.dto.ResponseDTO;
 import com.betrybe.alexandria.models.entities.Book;
+import com.betrybe.alexandria.models.entities.BookDetail;
 import com.betrybe.alexandria.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -121,4 +123,61 @@ public class BookController {
         .map((book) -> new BookDTO(book.getId(), book.getTitle(), book.getGenre()))
         .collect(Collectors.toList());
   }
+
+  @PostMapping("/{bookId}/details/")
+  public ResponseEntity<ResponseDTO<BookDetail>> createBookDetail(
+      @RequestBody BookDetailDTO bookDetailDTO) {
+    BookDetail newBookDetail = bookService.insertBookDetail(bookDetailDTO.toBookDetail());
+    ResponseDTO<BookDetail> responseDTO = new ResponseDTO<>(
+        "Detalhes do livro criado com sucesso!", newBookDetail);
+    return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+  }
+
+  @PutMapping("/{bookId}/details/{id}")
+  public ResponseEntity<ResponseDTO<BookDetail>> updateBookDetail(
+      @PathVariable Long bookId, @RequestBody BookDetailDTO bookDetailDTO) {
+    Optional<BookDetail> optionalBookDetail = bookService
+        .updateBookDetail(bookId, bookDetailDTO.toBookDetail());
+
+    if (optionalBookDetail.isEmpty()) {
+      ResponseDTO<BookDetail> responseDTO = new ResponseDTO<>(
+          String.format("Não foi encontrado o detalhe do livro de ID %d", bookId), null);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+    }
+
+    ResponseDTO<BookDetail> responseDTO = new ResponseDTO<>(
+        "Detalhes do livro atualizado com sucesso!", optionalBookDetail.get());
+    return ResponseEntity.ok(responseDTO);
+  }
+
+  @DeleteMapping("/{bookId}/details/{id}")
+  public ResponseEntity<ResponseDTO<BookDetail>> removeBookDetailById(@PathVariable Long bookId) {
+    Optional<BookDetail> optionalBookDetail = bookService.removeBookDetailById(bookId);
+
+    if (optionalBookDetail.isEmpty()) {
+      ResponseDTO<BookDetail> responseDTO = new ResponseDTO<>(
+          String.format("Não foi encontrado o detalhe do livro de ID %d", bookId), null);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+    }
+
+    ResponseDTO<BookDetail> responseDTO = new ResponseDTO<>(
+        "Detalhe do livro removido com sucesso!", null);
+    return ResponseEntity.ok(responseDTO);
+  }
+
+  @GetMapping("/{bookId}/details/{id}")
+  public ResponseEntity<ResponseDTO<BookDetail>> getBookDetailById(@PathVariable Long bookId) {
+    Optional<BookDetail> optionalBookDetail = bookService.getBookDetailById(bookId);
+
+    if (optionalBookDetail.isEmpty()) {
+      ResponseDTO<BookDetail> responseDTO = new ResponseDTO<>(
+          String.format("Não foi encontrado o detalhe do livro de ID %d", bookId), null);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+    }
+
+    ResponseDTO<BookDetail> responseDTO = new ResponseDTO<>(
+        "Livro encontrado com sucesso!", optionalBookDetail.get());
+    return ResponseEntity.ok(responseDTO);
+  }
+
 }

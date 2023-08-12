@@ -1,6 +1,8 @@
 package com.betrybe.alexandria.services;
 
 import com.betrybe.alexandria.models.entities.Book;
+import com.betrybe.alexandria.models.entities.BookDetail;
+import com.betrybe.alexandria.models.repositories.BookDetailRepository;
 import com.betrybe.alexandria.models.repositories.BookRepository;
 import java.util.List;
 import java.util.Optional;
@@ -12,15 +14,17 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class BookService {
-  private BookRepository bookRepository;
+  private final BookRepository bookRepository;
+  private final BookDetailRepository bookDetailRepository;
 
   /** Construtos da classe BookService
    *
    * @param bookRepository repositorio da entidade book
    */
   @Autowired
-  public BookService(BookRepository bookRepository) {
+  public BookService(BookRepository bookRepository, BookDetailRepository bookDetailRepository) {
     this.bookRepository = bookRepository;
+    this.bookDetailRepository = bookDetailRepository;
   }
 
   /** Metodo responsavel por enviar os dados de um novo livro ao repositorio.
@@ -83,4 +87,38 @@ public class BookService {
   public List<Book> getAllBooks() {
     return bookRepository.findAll();
   }
+
+  public BookDetail insertBookDetail(BookDetail bookDetail) {
+    return bookDetailRepository.save(bookDetail);
+  }
+
+  public Optional<BookDetail> updateBookDetail(Long id, BookDetail bookDetail) {
+    Optional<BookDetail> optionalBookDetail = bookDetailRepository.findById(id);
+
+    if (optionalBookDetail.isPresent()) {
+      BookDetail bookDetailFromDB = optionalBookDetail.get();
+      bookDetailFromDB.setSummary(bookDetail.getSummary());
+      bookDetailFromDB.setIsbn(bookDetail.getIsbn());
+      bookDetailFromDB.setPageCount(bookDetail.getPageCount());
+      bookDetailFromDB.setYear(bookDetail.getYear());
+
+      BookDetail updatedBookDetail = bookDetailRepository.save(bookDetailFromDB);
+      return Optional.of(updatedBookDetail);
+    }
+    return optionalBookDetail;
+  }
+
+  public Optional<BookDetail> removeBookDetailById(Long id) {
+    Optional<BookDetail> bookDetailOptional = bookDetailRepository.findById(id);
+
+    if(bookDetailOptional.isPresent()) {
+      bookDetailRepository.deleteById(id);
+    }
+    return bookDetailOptional;
+  }
+
+  public Optional<BookDetail> getBookDetailById(Long id) {
+    return bookDetailRepository.findById(id);
+  }
+
 }
