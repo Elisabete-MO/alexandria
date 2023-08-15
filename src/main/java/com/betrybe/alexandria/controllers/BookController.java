@@ -6,6 +6,9 @@ import com.betrybe.alexandria.controllers.dto.ResponseDTO;
 import com.betrybe.alexandria.models.entities.Book;
 import com.betrybe.alexandria.models.entities.BookDetail;
 import com.betrybe.alexandria.services.BookService;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Classe que representa o controller de livros.
@@ -116,12 +116,12 @@ public class BookController {
    *
    * @return Resposta de busca de todos os livros.
    */
-  @GetMapping()
-  public List<BookDTO> getAllBooks() {
-    List<Book> allBooks = bookService.getAllBooks();
-    return allBooks.stream()
-        .map((book) -> new BookDTO(book.getId(), book.getTitle(), book.getGenre()))
-        .collect(Collectors.toList());
+  @GetMapping() // /books?page=0&size=10
+  public List<BookDTO> getAllBooks(
+      @RequestParam(required = false, defaultValue = "0") int page,
+      @RequestParam(required = false, defaultValue = "20") int size
+    ) {
+    return bookService.getAllBooks(page, size);
   }
 
   @PostMapping("/{bookId}/details/")
