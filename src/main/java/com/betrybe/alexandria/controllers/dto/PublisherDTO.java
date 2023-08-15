@@ -9,6 +9,7 @@ import java.util.List;
  * @param id Identificador do editora.
  * @param name nome da editora.
  * @param address endereço da editora.
+ * @param books Lista de livros da editora.
  */
 public record PublisherDTO(Long id, String name, String address, List<Book> books) {
   public Publisher toPublisher() {
