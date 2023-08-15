@@ -1,10 +1,13 @@
 package com.betrybe.alexandria.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 
 /**
  * Classe que representa uma editora.
@@ -18,6 +21,10 @@ public class Publisher {
   private String name;
   private String address;
 
+  @OneToMany(mappedBy = "publisher")
+  @JsonIgnore
+  private List<Book> books;
+
   public Publisher() {
   }
 
@@ -27,10 +34,11 @@ public class Publisher {
    * @param name Nome da editora.
    * @param address endereço da editora.
    */
-  public Publisher(Long id, String name, String address) {
+  public Publisher(Long id, String name, String address, List<Book> books) {
     this.id = id;
     this.name = name;
     this.address = address;
+    this.books = books;
   }
 
   public Long getId() {
@@ -55,5 +63,13 @@ public class Publisher {
 
   public void setAddress(String address) {
     this.address = address;
+  }
+
+  public List<Book> getBooks() {
+    return books;
+  }
+
+  public void setBooks(List<Book> books) {
+    this.books = books;
   }
 }
